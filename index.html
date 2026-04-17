@@ -3,776 +3,502 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="StadiumSync - Smart Venue Experience Platform for real-time crowd management, navigation, and AI-powered assistance at large-scale sporting events.">
-    <meta name="keywords" content="stadium, venue, crowd management, smart navigation, real-time, sporting events">
-    <meta name="author" content="StadiumSync Team">
-    <title>StadiumSync — Smart Venue Experience Platform</title>
+    <title>StadiumSync — Live Stadium Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Splash / Loading Screen -->
-    <div id="splash-screen" class="splash-screen">
-        <div class="splash-content">
-            <div class="splash-logo">
-                <span class="material-icons-round splash-icon">stadium</span>
-                <h1>StadiumSync</h1>
-            </div>
-            <div class="splash-loader">
-                <div class="loader-bar"></div>
-            </div>
-            <p class="splash-text">Initializing your venue experience...</p>
+
+<!-- Splash -->
+<div class="splash-screen">
+    <div class="splash-content">
+        <div class="splash-logo">
+            <span class="material-icons-round splash-icon">stadium</span>
+            <h1>StadiumSync</h1>
         </div>
+        <div class="splash-loader"><div class="loader-bar"></div></div>
+        <p class="splash-text">Initializing venue intelligence…</p>
     </div>
+</div>
 
-    <!-- Main App Container -->
-    <div id="app" class="app hidden">
-        <!-- Sidebar Navigation -->
-        <nav id="sidebar" class="sidebar">
-            <div class="sidebar-header">
-                <span class="material-icons-round sidebar-logo-icon">stadium</span>
-                <span class="sidebar-title">StadiumSync</span>
-            </div>
-            <ul class="sidebar-nav">
-                <li class="nav-item active" data-view="dashboard" id="nav-dashboard">
-                    <span class="material-icons-round">dashboard</span>
-                    <span class="nav-label">Dashboard</span>
-                </li>
-                <li class="nav-item" data-view="crowd-map" id="nav-crowd-map">
-                    <span class="material-icons-round">map</span>
-                    <span class="nav-label">Crowd Map</span>
-                </li>
-                <li class="nav-item" data-view="queues" id="nav-queues">
-                    <span class="material-icons-round">schedule</span>
-                    <span class="nav-label">Wait Times</span>
-                </li>
-                <li class="nav-item" data-view="navigation" id="nav-navigation">
-                    <span class="material-icons-round">navigation</span>
-                    <span class="nav-label">Navigate</span>
-                </li>
-                <li class="nav-item" data-view="alerts" id="nav-alerts">
-                    <span class="material-icons-round">notifications_active</span>
-                    <span class="nav-label">Alerts</span>
-                    <span class="badge" id="alert-badge">3</span>
-                </li>
-                <li class="nav-item" data-view="assistant" id="nav-assistant">
-                    <span class="material-icons-round">smart_toy</span>
-                    <span class="nav-label">AI Assistant</span>
-                </li>
-                <li class="nav-item" data-view="services" id="nav-services">
-                    <span class="material-icons-round">room_service</span>
-                    <span class="nav-label">Services</span>
-                </li>
-                <li class="nav-item" data-view="settings" id="nav-settings">
-                    <span class="material-icons-round">settings</span>
-                    <span class="nav-label">Settings</span>
-                </li>
-            </ul>
-            <div class="sidebar-footer">
-                <div class="user-profile" id="user-profile">
-                    <div class="user-avatar">AS</div>
-                    <div class="user-info">
-                        <span class="user-name">Ayush S.</span>
-                        <span class="user-seat">Section 204 · Seat 12</span>
-                    </div>
+<!-- App -->
+<div class="app hidden">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span class="material-icons-round sidebar-logo-icon">stadium</span>
+            <span class="sidebar-title">StadiumSync</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="nav-item active" data-view="dashboard"><span class="material-icons-round">dashboard</span><span class="nav-label">Dashboard</span></li>
+            <li class="nav-item" data-view="crowd-map"><span class="material-icons-round">map</span><span class="nav-label">Crowd Map</span></li>
+            <li class="nav-item" data-view="queues"><span class="material-icons-round">groups</span><span class="nav-label">Queues</span></li>
+            <li class="nav-item" data-view="navigation"><span class="material-icons-round">near_me</span><span class="nav-label">Navigation</span></li>
+            <li class="nav-item" data-view="alerts"><span class="material-icons-round">notifications_active</span><span class="nav-label">Alerts</span><span class="badge">8</span></li>
+            <li class="nav-item" data-view="assistant"><span class="material-icons-round">smart_toy</span><span class="nav-label">AI Assistant</span></li>
+            <li class="nav-item" data-view="services"><span class="material-icons-round">storefront</span><span class="nav-label">Services</span></li>
+            <li class="nav-item" data-view="cctv"><span class="material-icons-round">videocam</span><span class="nav-label">CCTV</span></li>
+            <li class="nav-item" data-view="analytics"><span class="material-icons-round">analytics</span><span class="nav-label">Analytics</span></li>
+            <li class="nav-item" data-view="settings"><span class="material-icons-round">settings</span><span class="nav-label">Settings</span></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">DU</div>
+                <div class="user-info">
+                    <span class="user-name">Demo User</span>
+                    <span class="user-seat">Block D · Row 12 · Seat 7</span>
                 </div>
             </div>
-        </nav>
+        </div>
+    </aside>
 
-        <!-- Mobile Bottom Nav -->
-        <nav id="mobile-nav" class="mobile-nav">
-            <div class="mobile-nav-item active" data-view="dashboard">
-                <span class="material-icons-round">dashboard</span>
-                <span>Home</span>
-            </div>
-            <div class="mobile-nav-item" data-view="crowd-map">
-                <span class="material-icons-round">map</span>
-                <span>Map</span>
-            </div>
-            <div class="mobile-nav-item" data-view="queues">
-                <span class="material-icons-round">schedule</span>
-                <span>Queues</span>
-            </div>
-            <div class="mobile-nav-item" data-view="alerts">
-                <span class="material-icons-round">notifications</span>
-                <span>Alerts</span>
-            </div>
-            <div class="mobile-nav-item" data-view="assistant">
-                <span class="material-icons-round">smart_toy</span>
-                <span>AI</span>
-            </div>
-        </nav>
+    <!-- Main -->
+    <main class="main-content">
 
-        <!-- Main Content Area -->
-        <main id="main-content" class="main-content">
-            <!-- Top Header Bar -->
-            <header class="top-bar">
-                <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">
-                    <span class="material-icons-round">menu</span>
-                </button>
-                <div class="top-bar-info">
-                    <h2 id="view-title" class="view-title">Dashboard</h2>
-                    <span class="live-badge"><span class="live-dot"></span>LIVE</span>
-                </div>
-                <div class="top-bar-actions">
-                    <div class="event-timer" id="event-timer">
-                        <span class="material-icons-round">timer</span>
-                        <span id="match-clock">2nd Half · 67:23</span>
-                    </div>
-                    <button id="btn-emergency" class="btn-emergency" aria-label="Emergency">
-                        <span class="material-icons-round">emergency</span>
-                    </button>
-                </div>
-            </header>
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-info">
+                <button class="menu-toggle"><span class="material-icons-round">menu</span></button>
+                <h2 class="view-title">Dashboard</h2>
+                <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+            </div>
+            <div class="top-bar-actions">
+                <div class="event-timer"><span class="material-icons-round" style="font-size:1.2rem;color:var(--primary)">timer</span><span id="match-clock">00:00:00</span></div>
+                <button class="btn-emergency" title="Emergency"><span class="material-icons-round">emergency</span></button>
+            </div>
+        </header>
 
-            <!-- ===================== DASHBOARD VIEW ===================== -->
-            <section id="view-dashboard" class="view active">
-                <!-- Event Banner -->
-                <div class="event-banner" id="event-banner">
-                    <div class="event-banner-overlay"></div>
-                    <div class="event-banner-content">
-                        <div class="event-teams">
-                            <div class="team">
-                                <div class="team-logo" id="team-home-logo">MC</div>
-                                <span class="team-name">Man City</span>
+        <div class="main-layout-wrapper">
+            <div class="content-scroller">
+
+                <!-- ═══ Dashboard ═══ -->
+                <div class="view active" id="view-dashboard">
+                    <!-- Event Banner -->
+                    <div class="event-banner">
+                        <div class="event-banner-overlay"></div>
+                        <div class="event-banner-content">
+                            <div class="event-teams">
+                                <div class="team"><div class="team-logo" id="team-home-logo">DC</div><span class="team-name" id="team-home-name">Delhi Capitals</span></div>
+                                <div class="event-score">
+                                    <div class="score-row"><span class="score" id="score-home">186/4</span><span class="score-meta" id="overs-home">(20.0)</span></div>
+                                    <span class="score-separator">vs</span>
+                                    <div class="score-row"><span class="score" id="score-away">142/6</span><span class="score-meta" id="overs-away">(16.3)</span></div>
+                                </div>
+                                <div class="team"><div class="team-logo" id="team-away-logo">CSK</div><span class="team-name" id="team-away-name">Chennai Super Kings</span></div>
                             </div>
-                            <div class="event-score">
-                                <span class="score" id="score-home">2</span>
-                                <span class="score-separator">—</span>
-                                <span class="score" id="score-away">1</span>
-                            </div>
-                            <div class="team">
-                                <div class="team-logo" id="team-away-logo">AR</div>
-                                <span class="team-name">Arsenal</span>
+                            <div class="event-meta">
+                                <span id="match-status"><span class="material-icons-round">sports_cricket</span>Live — 2nd Innings</span>
+                                <span id="match-date"><span class="material-icons-round">calendar_today</span>March 29, 2026 · 7:30 PM IST</span>
+                                <span><span class="material-icons-round">location_on</span>Arun Jaitley Stadium, New Delhi</span>
                             </div>
                         </div>
-                        <div class="event-meta">
-                            <span><span class="material-icons-round">stadium</span> Etihad Stadium</span>
-                            <span><span class="material-icons-round">groups</span> 53,400 attendees</span>
-                            <span><span class="material-icons-round">sports_soccer</span> Premier League</span>
+                    </div>
+
+                    <!-- Match Events -->
+                    <div class="match-events-timeline" id="match-events"></div>
+
+                    <!-- Stats -->
+                    <div class="stats-grid" style="margin-top:24px">
+                        <div class="stat-card">
+                            <div class="stat-icon-wrap crowd"><span class="material-icons-round">groups</span></div>
+                            <div class="stat-data"><span class="stat-value" id="stat-occupancy">34,200</span><span class="stat-label">Current Occupancy <span id="stat-occupancy-pct">/ 41,000</span></span></div>
+                            <div class="stat-trend up" id="stat-occupancy-trend"><span class="material-icons-round">trending_up</span>83%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon-wrap wait"><span class="material-icons-round">schedule</span></div>
+                            <div class="stat-data"><span class="stat-value" id="stat-avg-wait">5 min</span><span class="stat-label">Avg Wait Time</span></div>
+                            <div class="stat-trend neutral"><span class="material-icons-round">trending_flat</span>Stable</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon-wrap flow"><span class="material-icons-round">swap_horiz</span></div>
+                            <div class="stat-data"><span class="stat-value" id="stat-flow-rate">570/min</span><span class="stat-label">Flow Rate</span></div>
+                            <div class="stat-trend down"><span class="material-icons-round">trending_down</span>Slowing</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon-wrap safety"><span class="material-icons-round">verified_user</span></div>
+                            <div class="stat-data"><span class="stat-value" id="stat-safety">A+</span><span class="stat-label">Safety Score</span></div>
+                            <div class="stat-trend safe"><span class="material-icons-round">check_circle</span>Clear</div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Grid -->
+                    <div class="dashboard-grid">
+                        <div class="panel panel-map">
+                            <div class="panel-header"><h3><span class="material-icons-round">map</span>Venue Heatmap</h3><span class="panel-action" style="cursor:pointer" onclick="app.navigate('crowd-map')">Full Map <span class="material-icons-round">open_in_new</span></span></div>
+                            <div class="panel-body"><div class="mini-heatmap"><canvas id="dashMapCanvas" class="cctv-canvas"></canvas></div></div>
+                        </div>
+                        <div class="panel panel-queues">
+                            <div class="panel-header"><h3><span class="material-icons-round">groups</span>Top Queues</h3><span class="panel-action" style="cursor:pointer" onclick="app.navigate('queues')">View All <span class="material-icons-round">open_in_new</span></span></div>
+                            <div class="panel-body"><div class="queue-list" id="dashboard-queues"></div></div>
+                        </div>
+                        <div class="panel panel-alerts">
+                            <div class="panel-header"><h3><span class="material-icons-round">notifications_active</span>Recent Alerts</h3><span class="panel-action" style="cursor:pointer" onclick="app.navigate('alerts')">View All <span class="material-icons-round">open_in_new</span></span></div>
+                            <div class="panel-body"><div class="alert-feed" id="dashboard-alerts"></div></div>
+                        </div>
+                        <div class="panel panel-actions">
+                            <div class="panel-header"><h3><span class="material-icons-round">bolt</span>Quick Actions</h3></div>
+                            <div class="panel-body">
+                                <div class="quick-actions-grid">
+                                    <button class="quick-action-btn" onclick="app.navigate('navigation')"><span class="material-icons-round">near_me</span><span>Navigate</span></button>
+                                    <button class="quick-action-btn" onclick="app.navigate('services')"><span class="material-icons-round">fastfood</span><span>Order Food</span></button>
+                                    <button class="quick-action-btn" onclick="app.navigate('assistant')"><span class="material-icons-round">smart_toy</span><span>AI Help</span></button>
+                                    <button class="quick-action-btn" onclick="app.toggleModal('ticket-modal')"><span class="material-icons-round">qr_code_2</span><span>My Ticket</span></button>
+                                    <button class="quick-action-btn" onclick="app.toggleModal('report-modal')"><span class="material-icons-round">report_problem</span><span>Report Issue</span></button>
+                                    <button class="quick-action-btn" onclick="app.navigate('cctv')"><span class="material-icons-round">videocam</span><span>CCTV</span></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Quick Stats Row -->
-                <div class="stats-grid">
-                    <div class="stat-card" id="stat-crowd">
-                        <div class="stat-icon-wrap crowd">
-                            <span class="material-icons-round">groups</span>
-                        </div>
-                        <div class="stat-data">
-                            <span class="stat-value" id="stat-crowd-val">87%</span>
-                            <span class="stat-label">Venue Capacity</span>
-                        </div>
-                        <div class="stat-trend up">
-                            <span class="material-icons-round">trending_up</span> +2%
-                        </div>
+                <!-- ═══ Crowd Map ═══ -->
+                <div class="view" id="view-crowd-map">
+                    <div class="map-mode-tabs">
+                        <button class="map-mode-tab active" data-mode="venue">Venue Map</button>
+                        <button class="map-mode-tab" data-mode="satellite">Satellite</button>
                     </div>
-                    <div class="stat-card" id="stat-wait">
-                        <div class="stat-icon-wrap wait">
-                            <span class="material-icons-round">hourglass_top</span>
+                    <div class="env-grid" id="env-grid" style="margin-bottom:20px"></div>
+                    <div class="map-container">
+                        <canvas class="venue-map-canvas" id="venueMapCanvas"></canvas>
+                        <div class="map-controls">
+                            <div class="map-filter-group">
+                                <button class="map-filter active" data-layer="density"><span class="material-icons-round">layers</span>Density</button>
+                                <button class="map-filter" data-layer="flow"><span class="material-icons-round">timeline</span>Flow</button>
+                                <button class="map-filter" data-layer="exits"><span class="material-icons-round">exit_to_app</span>Exits</button>
+                                <button class="map-filter" data-layer="amenities"><span class="material-icons-round">restaurant</span>Amenities</button>
+                            </div>
+                            <div class="map-zoom-controls">
+                                <button class="map-zoom-btn in"><span class="material-icons-round">add</span></button>
+                                <button class="map-zoom-btn out"><span class="material-icons-round">remove</span></button>
+                            </div>
                         </div>
-                        <div class="stat-data">
-                            <span class="stat-value" id="stat-wait-val">4.2m</span>
-                            <span class="stat-label">Avg. Wait Time</span>
+                        <div class="map-info-panel">
+                            <div class="map-info-header"><h4>Zone</h4><button class="close-info"><span class="material-icons-round">close</span></button></div>
+                            <div class="map-info-body"></div>
                         </div>
-                        <div class="stat-trend down">
-                            <span class="material-icons-round">trending_down</span> -1.5m
-                        </div>
-                    </div>
-                    <div class="stat-card" id="stat-flow">
-                        <div class="stat-icon-wrap flow">
-                            <span class="material-icons-round">swap_calls</span>
-                        </div>
-                        <div class="stat-data">
-                            <span class="stat-value" id="stat-flow-val">Normal</span>
-                            <span class="stat-label">Crowd Flow</span>
-                        </div>
-                        <div class="stat-trend neutral">
-                            <span class="material-icons-round">remove</span> Stable
-                        </div>
-                    </div>
-                    <div class="stat-card" id="stat-safety">
-                        <div class="stat-icon-wrap safety">
-                            <span class="material-icons-round">verified_user</span>
-                        </div>
-                        <div class="stat-data">
-                            <span class="stat-value" id="stat-safety-val">Green</span>
-                            <span class="stat-label">Safety Status</span>
-                        </div>
-                        <div class="stat-trend safe">
-                            <span class="material-icons-round">check_circle</span> All Clear
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dashboard Panels -->
-                <div class="dashboard-grid">
-                    <!-- Mini Crowd Heatmap -->
-                    <div class="panel panel-map" id="panel-mini-map">
-                        <div class="panel-header">
-                            <h3><span class="material-icons-round">map</span> Live Crowd Density</h3>
-                            <button class="panel-action" data-view="crowd-map">Expand <span class="material-icons-round">open_in_full</span></button>
-                        </div>
-                        <div class="panel-body">
-                            <canvas id="mini-heatmap" class="mini-heatmap"></canvas>
+                        <div class="map-legend">
                             <div class="heatmap-legend">
-                                <span class="legend-item"><span class="legend-dot low"></span>Low</span>
-                                <span class="legend-item"><span class="legend-dot medium"></span>Medium</span>
-                                <span class="legend-item"><span class="legend-dot high"></span>High</span>
-                                <span class="legend-item"><span class="legend-dot critical"></span>Critical</span>
+                                <div class="legend-item"><span class="legend-dot low"></span>Low</div>
+                                <div class="legend-item"><span class="legend-dot medium"></span>Medium</div>
+                                <div class="legend-item"><span class="legend-dot high"></span>High</div>
+                                <div class="legend-item"><span class="legend-dot critical"></span>Critical</div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Top Queue Wait Times -->
-                    <div class="panel panel-queues" id="panel-top-queues">
-                        <div class="panel-header">
-                            <h3><span class="material-icons-round">schedule</span> Nearest Queues</h3>
-                            <button class="panel-action" data-view="queues">View All <span class="material-icons-round">arrow_forward</span></button>
-                        </div>
-                        <div class="panel-body">
-                            <div class="queue-list" id="dash-queue-list">
-                                <!-- Populated by JS -->
-                            </div>
+                <!-- ═══ Queues ═══ -->
+                <div class="view" id="view-queues">
+                    <div class="queues-header">
+                        <div class="queue-filters">
+                            <button class="queue-filter active" data-type="all"><span class="material-icons-round">filter_list</span>All</button>
+                            <button class="queue-filter" data-type="entry"><span class="material-icons-round">door_front</span>Entry Gates</button>
+                            <button class="queue-filter" data-type="food"><span class="material-icons-round">restaurant</span>Food & Drink</button>
+                            <button class="queue-filter" data-type="facility"><span class="material-icons-round">wc</span>Facilities</button>
+                            <button class="queue-filter" data-type="merchandise"><span class="material-icons-round">storefront</span>Merchandise</button>
                         </div>
                     </div>
+                    <div class="queues-grid" id="queues-list"></div>
+                </div>
 
-                    <!-- Recent Alerts -->
-                    <div class="panel panel-alerts" id="panel-recent-alerts">
-                        <div class="panel-header">
-                            <h3><span class="material-icons-round">notifications_active</span> Recent Alerts</h3>
-                            <button class="panel-action" data-view="alerts">View All <span class="material-icons-round">arrow_forward</span></button>
-                        </div>
-                        <div class="panel-body">
-                            <div class="alert-feed" id="dash-alert-feed">
-                                <!-- Populated by JS -->
-                            </div>
+                <!-- ═══ Navigation ═══ -->
+                <div class="view" id="view-navigation">
+                    <div class="nav-search-bar">
+                        <span class="material-icons-round">search</span>
+                        <input type="text" placeholder="Where do you want to go?">
+                        <button class="voice-btn"><span class="material-icons-round">mic</span></button>
+                    </div>
+                    <div class="nav-suggestions">
+                        <h4>Quick Destinations</h4>
+                        <div class="nav-suggestion-chips">
+                            <button class="suggestion-chip"><span class="material-icons-round">wc</span>Nearest Restroom</button>
+                            <button class="suggestion-chip"><span class="material-icons-round">restaurant</span>Food Court</button>
+                            <button class="suggestion-chip"><span class="material-icons-round">exit_to_app</span>Nearest Exit</button>
+                            <button class="suggestion-chip"><span class="material-icons-round">local_hospital</span>Medical Station</button>
+                            <button class="suggestion-chip"><span class="material-icons-round">storefront</span>Merch Store</button>
+                            <button class="suggestion-chip"><span class="material-icons-round">chair</span>My Seat</button>
                         </div>
                     </div>
+                    <div id="leaflet-map" style="height:500px;border-radius:var(--radius-lg);margin-top:24px;border:1px solid var(--glass-border);overflow:hidden"></div>
+                </div>
 
-                    <!-- Quick Actions -->
-                    <div class="panel panel-actions" id="panel-quick-actions">
-                        <div class="panel-header">
-                            <h3><span class="material-icons-round">bolt</span> Quick Actions</h3>
-                        </div>
-                        <div class="panel-body">
-                            <div class="quick-actions-grid">
-                                <button class="quick-action-btn" id="qa-food" data-view="services">
-                                    <span class="material-icons-round">restaurant</span>
-                                    <span>Order Food</span>
-                                </button>
-                                <button class="quick-action-btn" id="qa-restroom" data-view="navigation">
-                                    <span class="material-icons-round">wc</span>
-                                    <span>Find Restroom</span>
-                                </button>
-                                <button class="quick-action-btn" id="qa-navigate" data-view="navigation">
-                                    <span class="material-icons-round">directions</span>
-                                    <span>My Seat</span>
-                                </button>
-                                <button class="quick-action-btn" id="qa-report" data-view="alerts">
-                                    <span class="material-icons-round">report</span>
-                                    <span>Report Issue</span>
-                                </button>
-                                <button class="quick-action-btn" id="qa-merch" data-view="services">
-                                    <span class="material-icons-round">storefront</span>
-                                    <span>Merch Shop</span>
-                                </button>
-                                <button class="quick-action-btn" id="qa-parking" data-view="navigation">
-                                    <span class="material-icons-round">local_parking</span>
-                                    <span>Parking</span>
-                                </button>
-                            </div>
+                <!-- ═══ Alerts ═══ -->
+                <div class="view" id="view-alerts">
+                    <div class="alerts-controls">
+                        <div class="alert-type-filters">
+                            <button class="alert-filter active" data-type="all">All Alerts</button>
+                            <button class="alert-filter" data-type="critical"><span class="dot critical"></span>Critical</button>
+                            <button class="alert-filter" data-type="warning"><span class="dot warning"></span>Warning</button>
+                            <button class="alert-filter" data-type="info"><span class="dot info"></span>Info</button>
                         </div>
                     </div>
+                    <div class="alerts-timeline" id="alerts-timeline"></div>
+                    <div class="report-issue-bar">
+                        <button class="btn-report-issue"><span class="material-icons-round">report_problem</span>Report an Issue</button>
+                    </div>
                 </div>
-            </section>
 
-            <!-- ===================== CROWD MAP VIEW ===================== -->
-            <section id="view-crowd-map" class="view">
-                <div class="map-container">
-                    <div class="map-controls">
-                        <div class="map-filter-group">
-                            <button class="map-filter active" data-layer="density" id="filter-density">
-                                <span class="material-icons-round">bubble_chart</span> Density
-                            </button>
-                            <button class="map-filter" data-layer="flow" id="filter-flow">
-                                <span class="material-icons-round">swap_calls</span> Flow
-                            </button>
-                            <button class="map-filter" data-layer="exits" id="filter-exits">
-                                <span class="material-icons-round">exit_to_app</span> Exits
-                            </button>
-                            <button class="map-filter" data-layer="amenities" id="filter-amenities">
-                                <span class="material-icons-round">local_dining</span> Amenities
-                            </button>
-                        </div>
-                        <div class="map-zoom-controls">
-                            <button class="map-zoom-btn" id="zoom-in"><span class="material-icons-round">add</span></button>
-                            <button class="map-zoom-btn" id="zoom-out"><span class="material-icons-round">remove</span></button>
-                        </div>
-                    </div>
-                    <canvas id="venue-map" class="venue-map-canvas"></canvas>
-                    <div class="map-info-panel" id="map-info-panel">
-                        <div class="map-info-header">
-                            <h4 id="map-zone-name">Select a Zone</h4>
-                            <button class="close-info" id="close-map-info"><span class="material-icons-round">close</span></button>
-                        </div>
-                        <div class="map-info-body" id="map-info-body">
-                            <p>Click on any zone to view details</p>
-                        </div>
-                    </div>
-                    <div class="heatmap-legend map-legend">
-                        <span class="legend-item"><span class="legend-dot low"></span>Low (&lt;30%)</span>
-                        <span class="legend-item"><span class="legend-dot medium"></span>Medium (30-60%)</span>
-                        <span class="legend-item"><span class="legend-dot high"></span>High (60-85%)</span>
-                        <span class="legend-item"><span class="legend-dot critical"></span>Critical (&gt;85%)</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ===================== QUEUES VIEW ===================== -->
-            <section id="view-queues" class="view">
-                <div class="queues-header">
-                    <div class="queue-filters">
-                        <button class="queue-filter active" data-type="all" id="qf-all">All</button>
-                        <button class="queue-filter" data-type="food" id="qf-food">
-                            <span class="material-icons-round">restaurant</span> Food
-                        </button>
-                        <button class="queue-filter" data-type="restroom" id="qf-restroom">
-                            <span class="material-icons-round">wc</span> Restrooms
-                        </button>
-                        <button class="queue-filter" data-type="merch" id="qf-merch">
-                            <span class="material-icons-round">storefront</span> Merch
-                        </button>
-                        <button class="queue-filter" data-type="entry" id="qf-entry">
-                            <span class="material-icons-round">door_front</span> Entry/Exit
-                        </button>
-                    </div>
-                    <div class="queue-sort">
-                        <span class="material-icons-round">sort</span>
-                        <select id="queue-sort-select" aria-label="Sort queues by">
-                            <option value="wait">Wait Time</option>
-                            <option value="distance">Distance</option>
-                            <option value="name">Name</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="queues-grid" id="queues-grid">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- ===================== NAVIGATION VIEW ===================== -->
-            <section id="view-navigation" class="view">
-                <div class="nav-search-bar">
-                    <span class="material-icons-round">search</span>
-                    <input type="text" id="nav-search-input" placeholder="Search for seats, gates, restrooms, food..." aria-label="Search venue locations">
-                    <button id="nav-voice-search" class="voice-btn" aria-label="Voice search">
-                        <span class="material-icons-round">mic</span>
-                    </button>
-                </div>
-                <div class="nav-suggestions" id="nav-suggestions">
-                    <h4>Popular Destinations</h4>
-                    <div class="nav-suggestion-chips">
-                        <button class="suggestion-chip" data-dest="my-seat">
-                            <span class="material-icons-round">event_seat</span> My Seat (204-12)
-                        </button>
-                        <button class="suggestion-chip" data-dest="nearest-restroom">
-                            <span class="material-icons-round">wc</span> Nearest Restroom
-                        </button>
-                        <button class="suggestion-chip" data-dest="nearest-food">
-                            <span class="material-icons-round">restaurant</span> Nearest Food
-                        </button>
-                        <button class="suggestion-chip" data-dest="exit-gate">
-                            <span class="material-icons-round">exit_to_app</span> Nearest Exit
-                        </button>
-                        <button class="suggestion-chip" data-dest="first-aid">
-                            <span class="material-icons-round">local_hospital</span> First Aid
-                        </button>
-                        <button class="suggestion-chip" data-dest="parking">
-                            <span class="material-icons-round">local_parking</span> My Parking (Lot B)
-                        </button>
-                    </div>
-                </div>
-                <div class="nav-route-panel hidden" id="nav-route-panel">
-                    <div class="route-header">
-                        <div class="route-dest-info">
-                            <h4 id="route-dest-name">Section 204, Seat 12</h4>
-                            <span class="route-eta" id="route-eta">
-                                <span class="material-icons-round">directions_walk</span> 3 min · 180m
-                            </span>
-                        </div>
-                        <button class="route-close" id="route-close">
-                            <span class="material-icons-round">close</span>
-                        </button>
-                    </div>
-                    <div class="route-steps" id="route-steps">
-                        <!-- Populated by JS -->
-                    </div>
-                    <div class="route-crowd-warning" id="route-crowd-warning">
-                        <span class="material-icons-round">info</span>
-                        <span>Concourse B is crowded. Consider using the upper concourse. <strong>Saves ~2 min.</strong></span>
-                    </div>
-                    <canvas id="nav-map-canvas" class="nav-map-canvas"></canvas>
-                </div>
-            </section>
-
-            <!-- ===================== ALERTS VIEW ===================== -->
-            <section id="view-alerts" class="view">
-                <div class="alerts-controls">
-                    <div class="alert-type-filters">
-                        <button class="alert-filter active" data-severity="all" id="af-all">All</button>
-                        <button class="alert-filter" data-severity="critical" id="af-critical">
-                            <span class="dot critical"></span> Critical
-                        </button>
-                        <button class="alert-filter" data-severity="warning" id="af-warning">
-                            <span class="dot warning"></span> Warning
-                        </button>
-                        <button class="alert-filter" data-severity="info" id="af-info">
-                            <span class="dot info"></span> Info
-                        </button>
-                    </div>
-                </div>
-                <div class="alerts-timeline" id="alerts-timeline">
-                    <!-- Populated by JS -->
-                </div>
-                <div class="report-issue-bar">
-                    <button id="btn-report-issue" class="btn-report-issue">
-                        <span class="material-icons-round">flag</span>
-                        Report an Issue
-                    </button>
-                </div>
-            </section>
-
-            <!-- ===================== AI ASSISTANT VIEW ===================== -->
-            <section id="view-assistant" class="view">
-                <div class="assistant-container">
-                    <div class="assistant-header">
-                        <div class="assistant-avatar">
-                            <span class="material-icons-round">smart_toy</span>
-                        </div>
-                        <div class="assistant-info">
-                            <h3>SyncBot</h3>
-                            <span class="assistant-status"><span class="live-dot"></span>Powered by Google Gemini</span>
-                        </div>
-                    </div>
-                    <div class="chat-messages" id="chat-messages">
-                        <div class="chat-message bot">
-                            <div class="message-avatar"><span class="material-icons-round">smart_toy</span></div>
-                            <div class="message-content">
-                                <p>Hey! 👋 I'm <strong>SyncBot</strong>, your AI venue assistant. I can help you with:</p>
-                                <div class="assistant-capabilities">
-                                    <div class="capability-chip">🗺️ Navigation</div>
-                                    <div class="capability-chip">🍔 Food & Drinks</div>
-                                    <div class="capability-chip">⏱️ Wait Times</div>
-                                    <div class="capability-chip">🚨 Safety Info</div>
-                                    <div class="capability-chip">🎫 Event Info</div>
-                                    <div class="capability-chip">🅿️ Parking</div>
-                                </div>
-                                <p>What can I help you with today?</p>
+                <!-- ═══ AI Assistant ═══ -->
+                <div class="view" id="view-assistant">
+                    <div class="assistant-container">
+                        <div class="assistant-header">
+                            <div class="assistant-avatar"><span class="material-icons-round">smart_toy</span></div>
+                            <div class="assistant-info">
+                                <h3>StadiumSync AI</h3>
+                                <div class="assistant-status"><span class="live-dot"></span>Powered by Claude</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="chat-quick-replies" id="chat-quick-replies">
-                        <button class="quick-reply" data-query="Where's the nearest restroom?">🚻 Nearest restroom</button>
-                        <button class="quick-reply" data-query="What's the shortest food queue?">🍕 Shortest food queue</button>
-                        <button class="quick-reply" data-query="How do I get back to my seat?">💺 Back to my seat</button>
-                        <button class="quick-reply" data-query="Is there anything I should be aware of?">⚠️ Any alerts?</button>
-                    </div>
-                    <div class="chat-input-bar">
-                        <input type="text" id="chat-input" placeholder="Ask me anything about the venue..." aria-label="Chat message input">
-                        <button id="chat-voice-btn" class="voice-btn" aria-label="Voice input">
-                            <span class="material-icons-round">mic</span>
-                        </button>
-                        <button id="chat-send-btn" class="send-btn" aria-label="Send message">
-                            <span class="material-icons-round">send</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ===================== SERVICES VIEW ===================== -->
-            <section id="view-services" class="view">
-                <div class="services-tabs">
-                    <button class="service-tab active" data-stab="food" id="stab-food">
-                        <span class="material-icons-round">restaurant</span> Food & Drinks
-                    </button>
-                    <button class="service-tab" data-stab="merch" id="stab-merch">
-                        <span class="material-icons-round">storefront</span> Merchandise
-                    </button>
-                    <button class="service-tab" data-stab="orders" id="stab-orders">
-                        <span class="material-icons-round">receipt_long</span> My Orders
-                    </button>
-                </div>
-                <div class="services-content" id="services-content">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- ===================== SETTINGS VIEW ===================== -->
-            <section id="view-settings" class="view">
-                <div class="settings-container">
-                    <div class="settings-section">
-                        <h3>Profile & Ticket</h3>
-                        <div class="setting-card">
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">person</span>
-                                    <div>
-                                        <span class="setting-label">Name</span>
-                                        <span class="setting-value">Ayush S.</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">event_seat</span>
-                                    <div>
-                                        <span class="setting-label">Seat</span>
-                                        <span class="setting-value">Section 204, Row F, Seat 12</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">local_parking</span>
-                                    <div>
-                                        <span class="setting-label">Parking</span>
-                                        <span class="setting-value">Lot B, Space 47</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">qr_code_2</span>
-                                    <div>
-                                        <span class="setting-label">Digital Ticket</span>
-                                        <span class="setting-value">Tap to view</span>
-                                    </div>
-                                </div>
-                                <button class="setting-action" id="btn-show-ticket">View</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="settings-section">
-                        <h3>Preferences</h3>
-                        <div class="setting-card">
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">notifications</span>
-                                    <div>
-                                        <span class="setting-label">Push Notifications</span>
-                                        <span class="setting-desc">Crowd alerts & wait time updates</span>
-                                    </div>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" checked id="toggle-notifications" aria-label="Toggle notifications">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">vibration</span>
-                                    <div>
-                                        <span class="setting-label">Haptic Feedback</span>
-                                        <span class="setting-desc">Vibrate on navigation turns</span>
-                                    </div>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" checked id="toggle-haptic" aria-label="Toggle haptic">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">accessibility_new</span>
-                                    <div>
-                                        <span class="setting-label">Accessibility Mode</span>
-                                        <span class="setting-desc">Larger text, high contrast</span>
-                                    </div>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="toggle-a11y" aria-label="Toggle accessibility">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">language</span>
-                                    <div>
-                                        <span class="setting-label">Language</span>
-                                        <span class="setting-value">English</span>
-                                    </div>
-                                </div>
-                                <select id="select-language" class="setting-select" aria-label="Select language">
-                                    <option value="en">English</option>
-                                    <option value="es">Español</option>
-                                    <option value="fr">Français</option>
-                                    <option value="hi">हिन्दी</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="settings-section">
-                        <h3>About</h3>
-                        <div class="setting-card">
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">info</span>
-                                    <div>
-                                        <span class="setting-label">StadiumSync v1.0.0</span>
-                                        <span class="setting-desc">Smart Venue Experience Platform</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <span class="material-icons-round">code</span>
-                                    <div>
-                                        <span class="setting-label">Powered by</span>
-                                        <span class="setting-desc">Google Gemini AI · Google Maps · Firebase</span>
+                        <div class="chat-messages">
+                            <div class="chat-message bot">
+                                <div class="message-avatar"><span class="material-icons-round" style="font-size:1.2rem">smart_toy</span></div>
+                                <div class="message-content">
+                                    Welcome to StadiumSync AI! I'm your intelligent venue assistant for today's IPL match — DC vs CSK at Arun Jaitley Stadium. How can I help you?
+                                    <div class="assistant-capabilities">
+                                        <span class="capability-chip">🍔 Food Queues</span>
+                                        <span class="capability-chip">🚻 Restrooms</span>
+                                        <span class="capability-chip">🏏 Live Score</span>
+                                        <span class="capability-chip">🗺️ Navigation</span>
+                                        <span class="capability-chip">⚠️ Alerts</span>
+                                        <span class="capability-chip">🎫 Tickets</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="chat-quick-replies">
+                            <button class="quick-reply">Where's the shortest food queue?</button>
+                            <button class="quick-reply">What's the current score?</button>
+                            <button class="quick-reply">Nearest restroom?</button>
+                            <button class="quick-reply">Which zones are crowded?</button>
+                            <button class="quick-reply">How do I exit quickly?</button>
+                        </div>
+                        <div class="chat-input-bar">
+                            <input type="text" placeholder="Ask StadiumSync AI anything…">
+                            <button class="send-btn"><span class="material-icons-round">send</span></button>
+                        </div>
                     </div>
                 </div>
-            </section>
-        </main>
-    </div>
 
-    <!-- Emergency Modal -->
-    <div class="modal-overlay hidden" id="emergency-modal">
-        <div class="modal emergency-modal">
-            <div class="modal-header emergency">
-                <span class="material-icons-round">emergency</span>
-                <h3>Emergency Services</h3>
+                <!-- ═══ Services ═══ -->
+                <div class="view" id="view-services">
+                    <div class="services-tabs">
+                        <button class="service-tab active" data-tab="food-content"><span class="material-icons-round">restaurant</span>Food & Drinks</button>
+                        <button class="service-tab" data-tab="merch-content"><span class="material-icons-round">storefront</span>Merchandise</button>
+                        <button class="service-tab" data-tab="orders-content"><span class="material-icons-round">receipt_long</span>My Orders</button>
+                    </div>
+                    <div class="service-content" id="food-content">
+                        <div class="food-menu-grid" id="food-menu"></div>
+                    </div>
+                    <div class="service-content" id="merch-content" style="display:none">
+                        <div class="food-menu-grid" id="merch-grid">
+                            <!-- Populated by JS or static -->
+                        </div>
+                    </div>
+                    <div class="service-content" id="orders-content" style="display:none">
+                        <div class="orders-list">
+                            <div class="order-card">
+                                <div class="order-header"><h4>Order #SS-4821</h4><span style="color:var(--warning);font-weight:600">Preparing</span></div>
+                                <div class="order-items"><span class="order-item-chip">Butter Chicken Bowl x1</span><span class="order-item-chip">Cold Coffee x2</span></div>
+                                <div class="order-footer"><span style="font-weight:800;color:var(--primary)">₹560</span><span style="font-size:.85rem;color:var(--text-muted)">ETA: ~6 min</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ CCTV ═══ -->
+                <div class="view" id="view-cctv">
+                    <div class="cctv-summary-bar">
+                        <div class="cctv-stat"><span class="material-icons-round">videocam</span><div><span class="cctv-stat-val" id="cctv-total-feeds">6</span><span class="cctv-stat-label">Active Feeds</span></div></div>
+                        <div class="cctv-stat"><span class="material-icons-round">people</span><div><span class="cctv-stat-val" id="cctv-total-people">9,270</span><span class="cctv-stat-label">People Detected</span></div></div>
+                        <div class="cctv-stat"><span class="material-icons-round">priority_high</span><div><span class="cctv-stat-val" id="cctv-anomalies">2</span><span class="cctv-stat-label">Anomalies</span></div></div>
+                        <div class="cctv-stat"><span class="material-icons-round">speed</span><div><span class="cctv-stat-val" id="cctv-uptime">99.7%</span><span class="cctv-stat-label">Uptime</span></div></div>
+                    </div>
+                    <div class="cctv-grid" id="cctv-grid"></div>
+                </div>
+
+                <!-- ═══ Analytics ═══ -->
+                <div class="view" id="view-analytics">
+                    <div class="revenue-cards" style="margin-bottom:24px">
+                        <div class="rev-card"><span class="rev-val" id="rev-total">₹28.5L</span><span class="rev-label">Total Revenue</span></div>
+                        <div class="rev-card"><span class="rev-val" id="rev-food">₹12.4L</span><span class="rev-label">Food & Beverage</span></div>
+                        <div class="rev-card"><span class="rev-val" id="rev-merch">₹6.8L</span><span class="rev-label">Merchandise</span></div>
+                        <div class="rev-card"><span class="rev-val" id="rev-tickets">₹9.3L</span><span class="rev-label">Tickets</span></div>
+                    </div>
+                    <div class="analytics-grid">
+                        <div class="panel" style="grid-column:span 6"><div class="panel-header"><h3><span class="material-icons-round">show_chart</span>Attendance Timeline</h3></div><div class="panel-body"><canvas id="attendanceChart"></canvas></div></div>
+                        <div class="panel" style="grid-column:span 6"><div class="panel-header"><h3><span class="material-icons-round">bar_chart</span>Revenue by Hour</h3></div><div class="panel-body"><canvas id="revenueChart"></canvas></div></div>
+                        <div class="panel" style="grid-column:span 6"><div class="panel-header"><h3><span class="material-icons-round">swap_horiz</span>Crowd Flow</h3></div><div class="panel-body"><canvas id="flowChart"></canvas></div></div>
+                        <div class="panel" style="grid-column:span 6">
+                            <div class="panel-header"><h3><span class="material-icons-round">analytics</span>Zone Occupancy</h3></div>
+                            <div class="panel-body" style="overflow-x:auto">
+                                <table class="analytics-table">
+                                    <thead><tr><th>Zone</th><th>Current</th><th>Capacity</th><th>Utilization</th><th>Status</th></tr></thead>
+                                    <tbody id="zone-analytics-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ Settings ═══ -->
+                <div class="view" id="view-settings">
+                    <div class="settings-container">
+                        <div class="settings-section">
+                            <h3>Notifications</h3>
+                            <div class="setting-card">
+                                <div class="setting-row">
+                                    <div class="setting-info"><span class="material-icons-round">notifications</span><div><span class="setting-label">Push Notifications</span><span class="setting-desc">Receive crowd alerts and queue updates</span></div></div>
+                                    <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                </div>
+                                <div class="setting-row">
+                                    <div class="setting-info"><span class="material-icons-round">warning</span><div><span class="setting-label">Emergency Alerts</span><span class="setting-desc">Always receive critical safety alerts</span></div></div>
+                                    <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                </div>
+                                <div class="setting-row">
+                                    <div class="setting-info"><span class="material-icons-round">restaurant</span><div><span class="setting-label">Order Updates</span><span class="setting-desc">Get notified when your order is ready</span></div></div>
+                                    <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h3>Preferences</h3>
+                            <div class="setting-card">
+                                <div class="setting-row">
+                                    <div class="setting-info"><span class="material-icons-round">language</span><div><span class="setting-label">Language</span><span class="setting-value">English</span></div></div>
+                                    <select class="setting-select"><option>English</option><option>हिन्दी</option><option>தமிழ்</option></select>
+                                </div>
+                                <div class="setting-row">
+                                    <div class="setting-info"><span class="material-icons-round">key</span><div><span class="setting-label">Anthropic API Key</span><span class="setting-desc">For AI Assistant (stored locally)</span></div></div>
+                                    <input type="password" id="anthropic-key" placeholder="sk-ant-..." style="width:200px;background:var(--bg-base);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:6px 12px;color:var(--text-main);font-family:inherit;font-size:.85rem" onchange="if(window.app&&window.app.assistant)window.app.assistant.setApiKey(this.value)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h3>Account</h3>
+                            <div class="setting-card">
+                                <div class="setting-row">
+                                    <div class="setting-info"><span class="material-icons-round">person</span><div><span class="setting-label">Demo User</span><span class="setting-value">Premium Ticket Holder</span></div></div>
+                                    <button class="setting-action">View Ticket</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /content-scroller -->
+
+            <!-- Right Panel -->
+            <aside class="right-panel">
+                <div class="panel-header"><span class="material-icons-round">auto_awesome</span><h3>Live AI Monitor</h3></div>
+                <div class="panel-section">
+                    <div class="section-label">Real-time Insights</div>
+                    <div class="ai-stream" id="ai-stream">
+                        <div class="ai-stream-item"><span class="ai-time">[Loading…]</span>Initializing venue intelligence systems…</div>
+                    </div>
+                </div>
+                <div class="panel-section">
+                    <div class="section-label">Safety Indicators</div>
+                    <div class="safety-indicator-grid">
+                        <div class="safety-item"><div class="label">Crowd Density</div><div class="safety-bar-wrap"><div class="safety-bar" id="bar-crowd" style="width:83%;background:#FFB800"></div></div><span class="val" id="val-crowd">83%</span></div>
+                        <div class="safety-item"><div class="label">Exit Clearance</div><div class="safety-bar-wrap"><div class="safety-bar" id="bar-exits" style="width:88%;background:#10B981"></div></div><span class="val" id="val-exits">88%</span></div>
+                        <div class="safety-item"><div class="label">Safety Index</div><div class="safety-bar-wrap"><div class="safety-bar" id="bar-safety" style="width:92%;background:#10B981"></div></div><span class="val" id="val-safety">92/100</span></div>
+                    </div>
+                </div>
+                <div class="panel-section">
+                    <div class="section-label">Scene Detection</div>
+                    <div class="ai-scene-box">
+                        <span class="scene-tag">🏏 Cricket Match</span>
+                        <span class="scene-tag">🌙 Night Game</span>
+                        <span class="scene-tag">👥 High Density</span>
+                        <span class="scene-tag">🔊 Active Crowd</span>
+                        <span class="scene-tag">🍔 Food Service</span>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button class="btn-sync"><span class="material-icons-round">qr_code_2</span>My Ticket / QR</button>
+                </div>
+            </aside>
+
+        </div><!-- /main-layout-wrapper -->
+    </main>
+
+    <!-- Mobile Nav -->
+    <nav class="mobile-nav">
+        <div class="mobile-nav-item active" data-view="dashboard"><span class="material-icons-round">dashboard</span>Home</div>
+        <div class="mobile-nav-item" data-view="crowd-map"><span class="material-icons-round">map</span>Map</div>
+        <div class="mobile-nav-item" data-view="queues"><span class="material-icons-round">groups</span>Queues</div>
+        <div class="mobile-nav-item" data-view="assistant"><span class="material-icons-round">smart_toy</span>AI</div>
+        <div class="mobile-nav-item" data-view="alerts"><span class="material-icons-round">notifications</span>Alerts</div>
+    </nav>
+
+</div><!-- /app -->
+
+<!-- Modals -->
+<div class="modal-overlay hidden" id="emergency-modal">
+    <div class="modal">
+        <div class="modal-header emergency"><span class="material-icons-round">emergency</span><h3>Emergency Protocol</h3></div>
+        <div class="modal-body">
+            <p style="margin-bottom:16px;color:var(--text-muted)">Select the type of emergency:</p>
+            <div class="emergency-options">
+                <button class="emergency-option" onclick="this.classList.toggle('selected')"><span class="material-icons-round">local_hospital</span><span>Medical</span></button>
+                <button class="emergency-option" onclick="this.classList.toggle('selected')"><span class="material-icons-round">local_fire_department</span><span>Fire</span></button>
+                <button class="emergency-option" onclick="this.classList.toggle('selected')"><span class="material-icons-round">security</span><span>Security</span></button>
+                <button class="emergency-option" onclick="this.classList.toggle('selected')"><span class="material-icons-round">report</span><span>Other</span></button>
             </div>
-            <div class="modal-body">
-                <p>Select the type of emergency:</p>
-                <div class="emergency-options">
-                    <button class="emergency-option" id="sos-medical">
-                        <span class="material-icons-round">local_hospital</span>
-                        <span>Medical</span>
-                    </button>
-                    <button class="emergency-option" id="sos-security">
-                        <span class="material-icons-round">security</span>
-                        <span>Security</span>
-                    </button>
-                    <button class="emergency-option" id="sos-fire">
-                        <span class="material-icons-round">local_fire_department</span>
-                        <span>Fire</span>
-                    </button>
-                    <button class="emergency-option" id="sos-other">
-                        <span class="material-icons-round">help</span>
-                        <span>Other</span>
-                    </button>
-                </div>
-                <p class="emergency-note">Your location (Section 204) will be shared with emergency services.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" id="emergency-cancel">Cancel</button>
-                <button class="btn-primary danger" id="emergency-call">
-                    <span class="material-icons-round">call</span> Call Now
-                </button>
-            </div>
+            <p class="emergency-note">Your location will be shared with stadium security automatically.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" data-close-modal>Cancel</button>
+            <button class="btn-primary danger"><span class="material-icons-round">emergency</span>Send Alert</button>
         </div>
     </div>
+</div>
 
-    <!-- Report Issue Modal -->
-    <div class="modal-overlay hidden" id="report-modal">
-        <div class="modal report-modal">
-            <div class="modal-header">
-                <span class="material-icons-round">flag</span>
-                <h3>Report an Issue</h3>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="report-type">Issue Type</label>
-                    <select id="report-type" aria-label="Issue type">
-                        <option value="">Select...</option>
-                        <option value="safety">Safety Concern</option>
-                        <option value="maintenance">Maintenance/Cleaning</option>
-                        <option value="crowd">Overcrowding</option>
-                        <option value="service">Service Issue</option>
-                        <option value="accessibility">Accessibility Problem</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="report-location">Location</label>
-                    <input type="text" id="report-location" placeholder="e.g., Gate B, Section 204" value="Section 204" aria-label="Issue location">
-                </div>
-                <div class="form-group">
-                    <label for="report-desc">Description</label>
-                    <textarea id="report-desc" rows="3" placeholder="Describe the issue..." aria-label="Issue description"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" id="report-cancel">Cancel</button>
-                <button class="btn-primary" id="report-submit">
-                    <span class="material-icons-round">send</span> Submit Report
-                </button>
-            </div>
+<div class="modal-overlay hidden" id="report-modal">
+    <div class="modal">
+        <div class="modal-header"><span class="material-icons-round" style="color:var(--warning)">report_problem</span><h3>Report an Issue</h3></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Issue Type</label><select><option>Facility Problem</option><option>Safety Concern</option><option>Crowd Issue</option><option>Service Complaint</option><option>Other</option></select></div>
+            <div class="form-group"><label>Location</label><input type="text" placeholder="e.g., North Stand Level 1"></div>
+            <div class="form-group"><label>Description</label><textarea rows="3" placeholder="Describe the issue…"></textarea></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" data-close-modal>Cancel</button>
+            <button class="btn-primary"><span class="material-icons-round">send</span>Submit Report</button>
         </div>
     </div>
+</div>
 
-    <!-- Ticket QR Modal -->
-    <div class="modal-overlay hidden" id="ticket-modal">
-        <div class="modal ticket-modal">
-            <div class="modal-header">
-                <span class="material-icons-round">confirmation_number</span>
-                <h3>Digital Ticket</h3>
-            </div>
-            <div class="modal-body ticket-body">
+<div class="modal-overlay hidden" id="ticket-modal">
+    <div class="modal">
+        <div class="modal-header"><span class="material-icons-round" style="color:var(--primary)">confirmation_number</span><h3>My Ticket</h3></div>
+        <div class="modal-body">
+            <div class="ticket-body">
                 <div class="ticket-card">
-                    <div class="ticket-event">
-                        <span class="ticket-league">Premier League 2025/26</span>
-                        <h4>Manchester City vs Arsenal</h4>
-                        <span class="ticket-date">April 16, 2026 · 20:00 BST</span>
-                    </div>
+                    <div class="ticket-event"><span class="ticket-league">IPL 2026</span><h4>Delhi Capitals vs Chennai Super Kings</h4><p class="ticket-date">March 29, 2026 · 7:30 PM IST</p></div>
                     <div class="ticket-details">
-                        <div class="ticket-detail">
-                            <span class="detail-label">Section</span>
-                            <span class="detail-value">204</span>
-                        </div>
-                        <div class="ticket-detail">
-                            <span class="detail-label">Row</span>
-                            <span class="detail-value">F</span>
-                        </div>
-                        <div class="ticket-detail">
-                            <span class="detail-label">Seat</span>
-                            <span class="detail-value">12</span>
-                        </div>
-                        <div class="ticket-detail">
-                            <span class="detail-label">Gate</span>
-                            <span class="detail-value">B</span>
-                        </div>
+                        <div class="ticket-detail"><span class="detail-label">Section</span><span class="detail-value">D</span></div>
+                        <div class="ticket-detail"><span class="detail-label">Row</span><span class="detail-value">12</span></div>
+                        <div class="ticket-detail"><span class="detail-label">Seat</span><span class="detail-value">7</span></div>
                     </div>
-                    <div class="ticket-qr" id="ticket-qr">
-                        <canvas id="qr-canvas" width="180" height="180"></canvas>
-                    </div>
-                    <span class="ticket-id">TKT-2026-MC-ARS-204F12</span>
+                    <div class="ticket-qr"><canvas id="qr-canvas" width="120" height="120"></canvas></div>
+                    <p class="ticket-id">SSYNC-2026-DC-07412</p>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" id="ticket-close">Close</button>
-            </div>
         </div>
+        <div class="modal-footer"><button class="btn-secondary" data-close-modal>Close</button></div>
     </div>
+</div>
 
-    <!-- Toast Notification -->
-    <div class="toast-container" id="toast-container"></div>
-
-    <!-- Scripts -->
-    <script src="js/data.js"></script>
-    <script src="js/map.js"></script>
-    <script src="js/assistant.js"></script>
-    <script src="js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/data.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/assistant.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
