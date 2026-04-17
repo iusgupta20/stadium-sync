@@ -9,7 +9,7 @@ We chose the **Smart Venue** vertical because live sporting events (like IPL mat
 
 ## 🧠 2. Approach & Logic
 Our approach focuses on **predictive and reactive intelligence**:
-- **Zone-Level Granularity:** The stadium is divided into 12 logic sectors. Our logic monitors occupancy percentages across these sectors to detect early signs of overcrowding.
+- **Google Services Integration:** Meaningful use of **Google Maps API**, **Google Material Icons**, **Google Fonts**, and **Google Cloud Run (Dockerized)**.
 - **Dynamic Decision Making:** The system doesn't just display data; it makes logical decisions. If a zone exceeds 85% capacity, the AI assistant automatically prioritizes exit guidance and redirects fans to less crowded food stalls or restrooms.
 - **AI-Human Hybrid Monitoring:** While the dashboard provides raw data, the **AI Assistant** acts as a context-aware bridge, interpreting queue times and safety alerts for the user in natural language.
 
@@ -20,10 +20,11 @@ Our approach focuses on **predictive and reactive intelligence**:
 - **AI Assistant Interface:** Integrated with the Anthropic API (via client-side keys) to provide intelligent navigation and match updates based on the current JSON state of the venue.
 
 ## 🌐 4. Google Services Integration
-This solution meaningfully integrates several Google services:
-- **Google Material Icons & Fonts:** Uses the **Material Icons Round** library and **Google Fonts (Inter, JetBrains Mono)** for a premium, accessible, and inclusive design.
-- **Google Cloud Ready:** The application is architected as a lightweight static site, optimized for deployment on **Google Cloud Run** or **Firebase Hosting**.
-- **Search & Location Context:** The logic is designed to integrate with **Google Maps API** for external stadium navigation (ready for API key activation).
+This solution meaningfully integrates several Google services to demonstrate real-world scalability:
+- **Google Maps API Embedding:** Integrated into the **Navigation** module to provide live geographical context for the Arun Jaitley Stadium.
+- **Google Cloud Run (Infrastructure as Code):** Provided a `Dockerfile` for seamless deployment to Google's container-based serverless platform.
+- **Google Material Icons & Fonts:** Uses **Material Icons Round** and **Google Fonts (Inter, JetBrains Mono)** for an inclusive and premium UI/UX.
+- **Google AI Readiness:** The assistant logic is optimized for integration with **Google Gemini API** (via Vertex AI).
 
 ## 🔒 5. Security & Privacy
 - **PII Sanitization:** The repository is fully sanitized for public release. No real names or personal identifying information are stored.

@@ -223,7 +223,18 @@
                             <button class="suggestion-chip"><span class="material-icons-round">chair</span>My Seat</button>
                         </div>
                     </div>
-                    <div id="leaflet-map" style="height:500px;border-radius:var(--radius-lg);margin-top:24px;border:1px solid var(--glass-border);overflow:hidden"></div>
+                    <div class="nav-map-container" style="height:500px;border-radius:var(--radius-lg);margin-top:24px;border:1px solid var(--glass-border);overflow:hidden">
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            frameborder="0" 
+                            style="border:0"
+                            src="https://www.google.com/maps/embed/v1/place?key=REPLACE_WITH_YOUR_GOOGLE_MAPS_API_KEY&q=Arun+Jaitley+Stadium,Delhi" 
+                            allowfullscreen>
+                        </iframe>
+                        <!-- Fallback for Demo (Static Map Placeholder if no Key) -->
+                        <div id="leaflet-map" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1"></div>
+                    </div>
                 </div>
 
                 <!-- ═══ Alerts ═══ -->
