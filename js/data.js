@@ -48,12 +48,12 @@ const SSyncData = {
         { id: 'a8', type: 'info', title: 'Innings Break', message: 'Strategic timeout in 3 overs. Concourse rush expected.', time: '30 min ago', icon: 'sports_cricket' }
     ],
     cameras: [
-        { id: 'cam1', name: 'North Stand Panoramic', location: 'Tower A — North', resolution: '4K HDR', people: 4200, anomaly: false, aiInsight: 'Crowd density stable. Movement patterns normal.', detections: { faces: 3850, bags: 620, phones: 1100 } },
-        { id: 'cam2', name: 'Gate A Entrance', location: 'Main Gate — North', resolution: '4K', people: 340, anomaly: true, aiInsight: 'Queue buildup detected. Recommending additional screening lane.', detections: { faces: 310, bags: 280, phones: 95 } },
-        { id: 'cam3', name: 'West Concourse', location: 'Concourse — West L1', resolution: '1080p', people: 890, anomaly: false, aiInsight: 'Moderate foot traffic. No congestion points identified.', detections: { faces: 750, bags: 340, phones: 290 } },
-        { id: 'cam4', name: 'South Pavilion', location: 'VIP Area — South', resolution: '4K HDR', people: 180, anomaly: false, aiInsight: 'Low density. VIP zone operating below threshold.', detections: { faces: 170, bags: 95, phones: 88 } },
-        { id: 'cam5', name: 'Food Court Overview', location: 'West Stand L1 — Interior', resolution: '1080p', people: 560, anomaly: true, aiInsight: 'Congestion near Counter 3. Suggest crowd rerouting via digital signage.', detections: { faces: 480, bags: 210, phones: 310 } },
-        { id: 'cam6', name: 'East Stand Upper', location: 'Tower B — East', resolution: '4K', people: 3100, anomaly: false, aiInsight: 'Section filling as expected. Exit routes clear.', detections: { faces: 2900, bags: 500, phones: 860 } }
+        { id: 'cam1', name: 'Stadium Bowl View', location: 'Central Tower — Upper Deck', section: 'stadium', resolution: '4K HDR', people: 4200, anomaly: false, aiInsight: 'Crowd movement is smooth across both stands.', detections: { faces: 3850, bags: 620, phones: 1100 } },
+        { id: 'cam2', name: 'Gate Entry Monitoring', location: 'Main Gate A — North', section: 'gate', resolution: '4K', people: 340, anomaly: true, aiInsight: 'Queue buildup detected. Open one additional screening lane.', detections: { faces: 310, bags: 280, phones: 95 } },
+        { id: 'cam3', name: 'Ground Boundary Cam', location: 'Boundary Rope — Long On', section: 'ground', resolution: '1080p', people: 420, anomaly: false, aiInsight: 'Perimeter remains clear. Security pattern normal.', detections: { faces: 370, bags: 95, phones: 180 } },
+        { id: 'cam4', name: 'Washroom Corridor Cam', location: 'Restroom Block B — South Stand', section: 'washroom', resolution: '1080p', people: 180, anomaly: false, aiInsight: 'Flow is stable with short dwell time in corridor.', detections: { faces: 170, bags: 65, phones: 88 } },
+        { id: 'cam5', name: 'Food Court Live Cam', location: 'West Stand L1 — Food Court', section: 'food court', resolution: '1080p', people: 560, anomaly: true, aiInsight: 'Congestion near Counter 3. Suggest rerouting to Counter 5.', detections: { faces: 480, bags: 210, phones: 310 } },
+        { id: 'cam6', name: 'East Stand Crowd Cam', location: 'Tower B — East Stand', section: 'stand', resolution: '4K', people: 3100, anomaly: false, aiInsight: 'Section filling as expected. Exit channels remain open.', detections: { faces: 2900, bags: 500, phones: 860 } }
     ],
     foodMenu: [
         { name: 'Butter Chicken Bowl', category: 'Main Course', emoji: '🍛', price: 320, wait: 8, rating: 4.5, reviews: 230, popular: true, available: true },
@@ -77,9 +77,40 @@ const SSyncData = {
     user: {
         name: 'Demo User',
         initials: 'DU',
+        phone: '+91 98765 43210',
         seat: 'Block D · Row 12 · Seat 7',
         gate: 'Gate A',
-        ticket: { id: 'SSYNC-2026-DC-07412', section: 'D', row: '12', seat: '7', type: 'Premium' }
+        type: 'Premium',
+        ticket: { id: 'SSYNC-2026-DC-07412', section: 'D', row: '12', seat: '7', type: 'Premium' },
+        ticketHistory: [
+            { id: 'SSYNC-2026-DC-07412', match: 'DC vs CSK', date: 'Mar 29, 2026', venue: 'Arun Jaitley Stadium', seat: 'D-12-7', type: 'Premium', status: 'active' },
+            { id: 'SSYNC-2026-MI-04891', match: 'DC vs MI',  date: 'Mar 14, 2026', venue: 'Arun Jaitley Stadium', seat: 'C-8-3',  type: 'General', status: 'used' },
+            { id: 'SSYNC-2026-RCB-02134', match: 'DC vs RCB', date: 'Feb 28, 2026', venue: 'Arun Jaitley Stadium', seat: 'E-5-11', type: 'General', status: 'used' },
+            { id: 'SSYNC-2025-KKR-09921', match: 'DC vs KKR', date: 'Nov 10, 2025', venue: 'Arun Jaitley Stadium', seat: 'B-3-6',  type: 'VIP', status: 'used' }
+        ],
+        purchaseHistory: [
+            { time: '19:42', item: 'Butter Chicken Bowl', category: 'Food', price: 320, icon: '🍛' },
+            { time: '20:05', item: 'Cold Coffee x2',      category: 'Beverage', price: 240, icon: '☕' },
+            { time: '20:18', item: 'DC Jersey 2026',      category: 'Merch', price: 2499, icon: '👕' },
+            { time: '18:55', item: 'Samosa Plate',         category: 'Snack', price: 80, icon: '🔺' },
+            { time: '18:30', item: 'Mango Lassi',          category: 'Beverage', price: 100, icon: '🥤' }
+        ],
+        searchHistory: [
+            { time: '19:10', query: 'Nearest restroom North Stand', icon: 'wc' },
+            { time: '19:28', query: 'Food court wait time',          icon: 'restaurant' },
+            { time: '19:55', query: 'DC jersey price',               icon: 'storefront' },
+            { time: '20:12', query: 'How to exit Gate A quickly',    icon: 'exit_to_app' },
+            { time: '20:31', query: 'Current score DC vs CSK',       icon: 'sports_cricket' }
+        ],
+        travelLog: [
+            { time: '18:10', zone: 'Gate A Entry',      type: 'entry',    note: 'Entered stadium, security check clear' },
+            { time: '18:25', zone: 'Block D — Seat 7',  type: 'seat',     note: 'Reached seat, settled in' },
+            { time: '19:28', zone: 'West Food Court',   type: 'food',     note: 'Ordered Butter Chicken Bowl + Coffee' },
+            { time: '19:42', zone: 'Block D — Seat 7',  type: 'seat',     note: 'Returned to seat' },
+            { time: '20:05', zone: 'Restroom B — South', type: 'restroom', note: 'Short visit, 4 min' },
+            { time: '20:15', zone: 'Merch Store',        type: 'food',    note: 'Bought DC Jersey 2026' },
+            { time: '20:22', zone: 'Block D — Seat 7',   type: 'seat',    note: 'Back for final overs' }
+        ]
     },
     zoneAnalytics: [
         { zone: 'North Stand', capacity: 8500, current: 7820, status: 'critical' },

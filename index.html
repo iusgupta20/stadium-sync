@@ -12,6 +12,55 @@
 </head>
 <body>
 
+<!-- Login Screen -->
+<div class="login-screen" id="login-screen">
+    <div class="login-card">
+        <div class="login-brand">
+            <span class="material-icons-round login-icon">stadium</span>
+            <h1>StadiumSync</h1>
+            <p>Smart Venue Intelligence Platform</p>
+        </div>
+        <div class="login-tabs">
+            <button class="login-tab active" id="tab-ticket">Ticket Login</button>
+            <button class="login-tab" id="tab-guest">Guest Entry</button>
+        </div>
+        <!-- Ticket Login -->
+        <div class="login-form" id="form-ticket">
+            <div class="login-field">
+                <span class="material-icons-round">confirmation_number</span>
+                <input type="text" id="input-ticket" placeholder="Ticket No. e.g. SSYNC-2026-DC-07412" maxlength="30">
+            </div>
+            <div class="login-field">
+                <span class="material-icons-round">phone</span>
+                <input type="tel" id="input-phone" placeholder="Mobile Number" maxlength="15">
+            </div>
+            <div class="login-field">
+                <span class="material-icons-round">person</span>
+                <input type="text" id="input-name" placeholder="Your Name">
+            </div>
+            <button class="login-btn" id="btn-ticket-login">
+                <span class="material-icons-round">login</span>Enter with Ticket
+            </button>
+            <p class="login-error hidden" id="ticket-error">Invalid ticket. Try: SSYNC-2026-DC-07412</p>
+        </div>
+        <!-- Guest Login -->
+        <div class="login-form hidden" id="form-guest">
+            <div class="login-field">
+                <span class="material-icons-round">person_outline</span>
+                <input type="text" id="input-guest-name" placeholder="Your Name (optional)">
+            </div>
+            <div class="login-field">
+                <span class="material-icons-round">phone</span>
+                <input type="tel" id="input-guest-phone" placeholder="Phone Number (optional)" maxlength="15">
+            </div>
+            <button class="login-btn guest" id="btn-guest-login">
+                <span class="material-icons-round">explore</span>Continue as Guest
+            </button>
+        </div>
+        <p class="login-footer">By entering you agree to venue safety monitoring policy.</p>
+    </div>
+</div>
+
 <!-- Splash -->
 <div class="splash-screen">
     <div class="splash-content">
@@ -43,6 +92,7 @@
             <li class="nav-item" data-view="services"><span class="material-icons-round">storefront</span><span class="nav-label">Services</span></li>
             <li class="nav-item" data-view="cctv"><span class="material-icons-round">videocam</span><span class="nav-label">CCTV</span></li>
             <li class="nav-item" data-view="analytics"><span class="material-icons-round">analytics</span><span class="nav-label">Analytics</span></li>
+            <li class="nav-item" data-view="profile"><span class="material-icons-round">account_circle</span><span class="nav-label">My Profile</span></li>
             <li class="nav-item" data-view="settings"><span class="material-icons-round">settings</span><span class="nav-label">Settings</span></li>
         </ul>
         <div class="sidebar-footer">
@@ -321,13 +371,57 @@
 
                 <!-- ═══ CCTV ═══ -->
                 <div class="view" id="view-cctv">
+                    <div id="cctv-api-status" class="cctv-api-bar offline"><span class="api-dot"></span>Python OpenCV API <strong>Offline</strong> &mdash; <span style="opacity:.7">run: uvicorn app:app --port 8000</span></div>
+                    <div class="cctv-hero">
+                        <div class="cctv-hero-copy">
+                            <h3><span class="material-icons-round">shield</span>CCTV & Detection Command</h3>
+                            <p>Unified monitoring for crowd movement, object detection, and anomaly escalation in real time.</p>
+                        </div>
+                        <div class="cctv-hero-actions">
+                            <button class="cctv-chip active"><span class="material-icons-round">bolt</span>Live Analysis</button>
+                            <button class="cctv-chip"><span class="material-icons-round">history</span>Last 15 min</button>
+                            <button class="cctv-chip"><span class="material-icons-round">download</span>Export Report</button>
+                        </div>
+                    </div>
                     <div class="cctv-summary-bar">
                         <div class="cctv-stat"><span class="material-icons-round">videocam</span><div><span class="cctv-stat-val" id="cctv-total-feeds">6</span><span class="cctv-stat-label">Active Feeds</span></div></div>
                         <div class="cctv-stat"><span class="material-icons-round">people</span><div><span class="cctv-stat-val" id="cctv-total-people">9,270</span><span class="cctv-stat-label">People Detected</span></div></div>
                         <div class="cctv-stat"><span class="material-icons-round">priority_high</span><div><span class="cctv-stat-val" id="cctv-anomalies">2</span><span class="cctv-stat-label">Anomalies</span></div></div>
                         <div class="cctv-stat"><span class="material-icons-round">speed</span><div><span class="cctv-stat-val" id="cctv-uptime">99.7%</span><span class="cctv-stat-label">Uptime</span></div></div>
                     </div>
+
+                    <div class="cctv-detection-layout">
+                        <div class="detection-grid" id="cctv-detection-grid"></div>
+                        <div class="incident-log" id="cctv-incident-log"></div>
+                    </div>
+
                     <div class="cctv-grid" id="cctv-grid"></div>
+
+                    <!-- Upload panel: Phone & Satellite -->
+                    <div class="cctv-upload-section">
+                        <h3><span class="material-icons-round">upload</span>Analyse Custom Image</h3>
+                        <p>Upload a photo from a phone camera or satellite feed and run OpenCV detection via the Python API.</p>
+                        <div class="upload-cards">
+                            <div class="upload-card" id="phone-upload-card">
+                                <span class="material-icons-round">smartphone</span>
+                                <span>Phone Camera</span>
+                                <label class="upload-label">
+                                    <input type="file" id="phone-file-input" accept="image/*">
+                                    <span>Choose Image</span>
+                                </label>
+                                <div class="upload-result" id="phone-result"></div>
+                            </div>
+                            <div class="upload-card" id="satellite-upload-card">
+                                <span class="material-icons-round">satellite_alt</span>
+                                <span>Satellite Feed</span>
+                                <label class="upload-label">
+                                    <input type="file" id="satellite-file-input" accept="image/*">
+                                    <span>Choose Image</span>
+                                </label>
+                                <div class="upload-result" id="satellite-result"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- ═══ Analytics ═══ -->
@@ -351,6 +445,70 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- ═══ Profile ═══ -->
+                <div class="view" id="view-profile">
+
+                    <!-- Profile Hero -->
+                    <div class="profile-hero">
+                        <div class="profile-avatar-wrap">
+                            <div class="profile-avatar-lg" id="profile-avatar-lg">DU</div>
+                            <span class="profile-role-badge" id="profile-role-badge">Premium</span>
+                        </div>
+                        <div class="profile-hero-info">
+                            <h2 id="profile-display-name">Demo User</h2>
+                            <p id="profile-display-phone"><span class="material-icons-round">phone</span> +91 98765 43210</p>
+                            <p id="profile-display-seat"><span class="material-icons-round">chair</span> Block D · Row 12 · Seat 7</p>
+                            <p id="profile-display-gate"><span class="material-icons-round">door_front</span> Entry: Gate A</p>
+                        </div>
+                        <button class="profile-logout-btn" id="btn-logout">
+                            <span class="material-icons-round">logout</span>Logout
+                        </button>
+                    </div>
+
+                    <div class="profile-grid">
+
+                        <!-- Ticket History -->
+                        <div class="panel profile-panel">
+                            <div class="panel-header"><h3><span class="material-icons-round">confirmation_number</span>Ticket History</h3></div>
+                            <div class="panel-body" id="ticket-history-list"></div>
+                        </div>
+
+                        <!-- Purchase History -->
+                        <div class="panel profile-panel">
+                            <div class="panel-header"><h3><span class="material-icons-round">receipt_long</span>Purchase History</h3></div>
+                            <div class="panel-body" id="purchase-history-list"></div>
+                        </div>
+
+                        <!-- Search History -->
+                        <div class="panel profile-panel">
+                            <div class="panel-header"><h3><span class="material-icons-round">manage_search</span>Search History</h3></div>
+                            <div class="panel-body" id="search-history-list"></div>
+                        </div>
+
+                        <!-- Travel / Movement Tracker -->
+                        <div class="panel profile-panel panel-travel">
+                            <div class="panel-header">
+                                <h3><span class="material-icons-round">route</span>Travel Tracker — Today's Match</h3>
+                                <span class="panel-action" id="travel-status-badge"><span class="live-dot"></span>Tracking</span>
+                            </div>
+                            <div class="panel-body">
+                                <div class="travel-timeline" id="travel-timeline"></div>
+                                <div class="travel-map-preview">
+                                    <canvas id="travel-map-canvas"></canvas>
+                                    <div class="travel-map-legend">
+                                        <span><span class="tleg entry"></span>Entry</span>
+                                        <span><span class="tleg food"></span>Food</span>
+                                        <span><span class="tleg restroom"></span>Restroom</span>
+                                        <span><span class="tleg seat"></span>Seat</span>
+                                        <span><span class="tleg exit"></span>Exit</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -510,6 +668,8 @@
 <script src="js/map.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/assistant.js"></script>
+<script src="js/vision-api.js"></script>
+<script src="js/profile.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

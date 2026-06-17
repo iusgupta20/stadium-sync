@@ -10,9 +10,13 @@ class App {
         this.simInterval = null;
         this.aiInterval = null;
         this.clockInterval = null;
+        this.cctvFeedState = {};
+        this.visionAPI = new VisionAPI('http://localhost:8000');
     }
 
     init() {
+        // Boot login screen — app waits for login
+        window._loginCtrl = new LoginController();
         this.hideSplash();
         this.bindNav();
         this.bindModals();
@@ -61,7 +65,8 @@ class App {
         const titles = {
             dashboard: 'Dashboard', 'crowd-map': 'Crowd Map', queues: 'Queue Management',
             navigation: 'Navigation', alerts: 'Alerts & Safety', assistant: 'AI Assistant',
-            services: 'Services', cctv: 'CCTV & Detection', analytics: 'Analytics', settings: 'Settings'
+            services: 'Services', cctv: 'CCTV & Detection', analytics: 'Analytics',
+            profile: 'My Profile', settings: 'Settings'
         };
         const titleEl = document.querySelector('.view-title');
         if (titleEl) titleEl.textContent = titles[viewId] || viewId;
@@ -83,6 +88,7 @@ class App {
             this.assistant = new SyncAssistant();
         }
         if (viewId === 'cctv') this.startCCTV();
+        if (viewId === 'profile') { if (!this._profileView) this._profileView = new ProfileView(); this._profileView.render(); }
         if (viewId === 'services') { this.populateServices(); this.populateMerch(); }
         if (viewId === 'navigation') this.initLeafletMap();
         if (viewId === 'analytics') this.populateAnalytics();
@@ -358,19 +364,21 @@ class App {
     startCCTV() {
         this.cctvIntervals.forEach(clearInterval);
         this.cctvIntervals = [];
+        this.cctvFeedState = {};
 
         const grid = document.getElementById('cctv-grid');
         if (!grid) return;
         grid.innerHTML = SSyncData.cameras.map(cam => `
-            <div class="cctv-card ${cam.anomaly ? 'anomaly' : ''}">
+            <div class="cctv-card ${cam.anomaly ? 'anomaly' : ''}" data-cam-id="${cam.id}">
                 <div class="cctv-feed">
                     <canvas class="cctv-canvas" id="cctv-${cam.id}"></canvas>
                     <div class="cctv-live-badge"><span class="live-dot"></span>LIVE</div>
                     <span class="cctv-res">${cam.resolution}</span>
+                    <span class="cctv-status-pill ${cam.anomaly ? 'anomaly' : 'normal'}">${cam.anomaly ? 'Anomaly' : 'Normal'}</span>
                 </div>
                 <div class="cctv-info">
                     <h4>${cam.name}</h4>
-                    <div class="cctv-location"><span class="material-icons-round" style="font-size:1rem">location_on</span>${cam.location}</div>
+                    <div class="cctv-location"><span class="material-icons-round" style="font-size:1rem">location_on</span>${cam.location} &middot; <em>${cam.section}</em></div>
                     <div class="cctv-detections">
                         <span>👤 ${cam.detections.faces}</span>
                         <span>🎒 ${cam.detections.bags}</span>
@@ -389,50 +397,253 @@ class App {
         this.setText('#cctv-anomalies', anomalyCount);
         this.setText('#cctv-uptime', '99.7%');
 
-        // Simulate feeds
+        this.populateCCTVDetections();
+        this.populateCCTVIncidents();
+
+        // Canvas animated feeds
         SSyncData.cameras.forEach(cam => {
             const canvas = document.getElementById(`cctv-${cam.id}`);
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = 180;
+            this.cctvFeedState[cam.id] = this.createCCTVFeedState(cam, canvas.width, canvas.height);
             const interval = setInterval(() => this.drawCCTVFrame(ctx, canvas.width, canvas.height, cam), 100);
             this.cctvIntervals.push(interval);
         });
+
+        // Python OpenCV API polling
+        this._startVisionAPI();
+    }
+
+    _startVisionAPI() {
+        const apiBar = document.getElementById('cctv-api-status');
+        const camIds = SSyncData.cameras.map(c => c.id);
+
+        this.visionAPI.onStatus = (connected) => {
+            if (!apiBar) return;
+            if (connected) {
+                apiBar.innerHTML = '<span class="api-dot connected"></span>Python OpenCV API <strong>Connected</strong>';
+                apiBar.className = 'cctv-api-bar connected';
+            } else {
+                apiBar.innerHTML = '<span class="api-dot"></span>Python OpenCV API <strong>Offline</strong> &mdash; <span style="opacity:.7">run: uvicorn app:app --port 8000</span>';
+                apiBar.className = 'cctv-api-bar offline';
+            }
+        };
+
+        this.visionAPI.onResult = (camId, result) => {
+            this._applyAPIResult(camId, result);
+        };
+
+        this.visionAPI.startPolling(camIds, 4200);
+
+        // Phone upload
+        const phoneInput = document.getElementById('phone-file-input');
+        if (phoneInput) phoneInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const resultEl = document.getElementById('phone-result');
+            resultEl.innerHTML = '<span class="upload-spinner"></span>Analysing…';
+            try {
+                const data = await this.visionAPI.detectUpload(file, 'phone', 'phone-cam');
+                this._renderUploadResult(resultEl, data, file);
+            } catch { resultEl.innerHTML = '<span style="color:var(--danger)">API offline — start uvicorn first.</span>'; }
+        });
+
+        // Satellite upload
+        const satInput = document.getElementById('satellite-file-input');
+        if (satInput) satInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const resultEl = document.getElementById('satellite-result');
+            resultEl.innerHTML = '<span class="upload-spinner"></span>Analysing…';
+            try {
+                const data = await this.visionAPI.detectUpload(file, 'satellite', 'satellite-feed');
+                this._renderUploadResult(resultEl, data, file);
+            } catch { resultEl.innerHTML = '<span style="color:var(--danger)">API offline — start uvicorn first.</span>'; }
+        });
+    }
+
+    _renderUploadResult(el, data, file) {
+        const counts = data.object_counts || {};
+        const rows = Object.entries(counts).map(([k, v]) =>
+            `<span class="upload-count-chip"><b>${v}</b> ${k.replace(/_/g, ' ')}</span>`).join('');
+        let annotatedHtml = '';
+        if (data.annotated_frame) {
+            annotatedHtml = `<img class="upload-preview" src="data:image/jpeg;base64,${data.annotated_frame}" alt="annotated">`;
+        } else {
+            annotatedHtml = `<img class="upload-preview" src="${URL.createObjectURL(file)}" alt="preview">`;
+        }
+        el.innerHTML = `${annotatedHtml}<div class="upload-count-row">${rows || '<span>No objects detected</span>'}</div>`;
+    }
+
+    _applyAPIResult(camId, result) {
+        const card = document.querySelector(`[data-cam-id="${camId}"]`);
+        if (!card) return;
+
+        // Show annotated frame from API
+        let img = card.querySelector('.cctv-annotated');
+        if (result.annotated_frame) {
+            if (!img) {
+                img = document.createElement('img');
+                img.className = 'cctv-annotated';
+                card.querySelector('.cctv-feed').appendChild(img);
+            }
+            img.src = `data:image/jpeg;base64,${result.annotated_frame}`;
+        }
+
+        // Update live detection counts on the card
+        const counts = result.object_counts || {};
+        const people = counts.person || 0;
+        const motion = counts.moving_object || 0;
+        const bags = counts.bag_like || 0;
+        const phones = counts.handheld_like || 0;
+
+        const det = card.querySelector('.cctv-detections');
+        if (det) {
+            det.innerHTML =
+                `<span title="People">👤 ${people}</span>` +
+                `<span title="Motion zones">🏃 ${motion}</span>` +
+                `<span title="Bags">🎒 ${bags}</span>` +
+                `<span title="Devices">📱 ${phones}</span>` +
+                `<span class="api-tag">OpenCV</span>`;
+        }
+
+        // Update summary bar totals
+        let totalPeople = 0, totalMotion = 0;
+        document.querySelectorAll('.cctv-card').forEach(c => {
+            const spans = c.querySelectorAll('.cctv-detections span');
+            if (spans[0]) totalPeople += parseInt(spans[0].textContent.replace(/\D/g, '')) || 0;
+            if (spans[1]) totalMotion += parseInt(spans[1].textContent.replace(/\D/g, '')) || 0;
+        });
+        if (totalPeople > 0) this.setText('#cctv-total-people', (totalPeople).toLocaleString());
+    }
+
+    createCCTVFeedState(cam, w, h) {
+        const count = Math.max(8, Math.min(Math.floor(cam.people / 110), 36));
+        const people = [];
+        for (let i = 0; i < count; i++) {
+            const y = h * (0.36 + Math.random() * 0.54);
+            people.push({
+                x: Math.random() * w,
+                y,
+                vx: (Math.random() * 0.8 + 0.25) * (Math.random() > 0.5 ? 1 : -1),
+                sway: Math.random() * Math.PI * 2
+            });
+        }
+        return { people, scanOffset: Math.random() * h };
     }
 
     drawCCTVFrame(ctx, w, h, cam) {
-        ctx.fillStyle = `rgba(11,17,32,0.15)`;
+        const state = this.cctvFeedState[cam.id] || this.createCCTVFeedState(cam, w, h);
+        this.cctvFeedState[cam.id] = state;
+
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, 'rgba(8,18,35,0.95)');
+        grad.addColorStop(1, 'rgba(6,11,22,0.95)');
+        ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
 
+        // Subtle perspective bands
+        for (let i = 0; i < 5; i++) {
+            const y = h * (0.32 + i * 0.13);
+            ctx.strokeStyle = 'rgba(21,101,216,0.09)';
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(w, y + i * 2);
+            ctx.stroke();
+        }
+
         // Noise
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 20; i++) {
             const x = Math.random() * w, y = Math.random() * h;
-            const a = Math.random() * 0.15;
+            const a = Math.random() * 0.08;
             ctx.fillStyle = `rgba(0,212,255,${a})`;
             ctx.fillRect(x, y, 2, 2);
         }
 
-        // People dots
-        const count = Math.min(cam.people / 30, 50);
-        for (let i = 0; i < count; i++) {
-            const x = Math.random() * w, y = h * 0.3 + Math.random() * h * 0.6;
+        // Moving people silhouettes
+        state.people.forEach(p => {
+            p.x += p.vx;
+            p.sway += 0.12;
+            if (p.x > w + 10) p.x = -10;
+            if (p.x < -10) p.x = w + 10;
+            const bob = Math.sin(p.sway) * 0.8;
+
+            const bodyColor = cam.anomaly ? 'rgba(255,184,0,0.65)' : 'rgba(0,212,255,0.45)';
+            const headColor = cam.anomaly ? 'rgba(255,220,140,0.8)' : 'rgba(170,238,255,0.65)';
+
+            ctx.fillStyle = bodyColor;
+            ctx.fillRect(p.x - 1.2, p.y - 8 + bob, 2.4, 8);
             ctx.beginPath();
-            ctx.arc(x, y, 2 + Math.random() * 2, 0, Math.PI * 2);
-            ctx.fillStyle = cam.anomaly
-                ? `rgba(255,184,0,${0.3 + Math.random() * 0.4})`
-                : `rgba(0,212,255,${0.2 + Math.random() * 0.3})`;
+            ctx.fillStyle = headColor;
+            ctx.arc(p.x, p.y - 10 + bob, 2.1, 0, Math.PI * 2);
             ctx.fill();
-        }
+        });
 
         // Scanline
-        const scanY = (Date.now() / 20) % h;
-        ctx.strokeStyle = 'rgba(0,212,255,0.08)';
-        ctx.lineWidth = 1;
+        state.scanOffset = (state.scanOffset + 1.9) % h;
+        const scanY = state.scanOffset;
+        ctx.strokeStyle = 'rgba(0,212,255,0.16)';
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(0, scanY);
         ctx.lineTo(w, scanY);
         ctx.stroke();
+
+        // Timestamp overlay
+        const now = new Date();
+        const ts = now.toLocaleTimeString('en-IN', { hour12: false });
+        ctx.fillStyle = 'rgba(255,255,255,0.75)';
+        ctx.font = '10px JetBrains Mono';
+        ctx.fillText(ts, 10, h - 8);
+    }
+
+    populateCCTVDetections() {
+        const target = document.getElementById('cctv-detection-grid');
+        if (!target) return;
+
+        const cams = SSyncData.cameras;
+        const totalFaces = cams.reduce((sum, c) => sum + c.detections.faces, 0);
+        const totalBags = cams.reduce((sum, c) => sum + c.detections.bags, 0);
+        const totalPhones = cams.reduce((sum, c) => sum + c.detections.phones, 0);
+        const anomalyCount = cams.filter(c => c.anomaly).length;
+
+        const cards = [
+            { label: 'Faces Tracked', val: totalFaces.toLocaleString(), status: 'Stable', cls: 'ok' },
+            { label: 'Bags Detected', val: totalBags.toLocaleString(), status: 'Normal', cls: 'ok' },
+            { label: 'Phones Seen', val: totalPhones.toLocaleString(), status: 'Expected', cls: 'ok' },
+            { label: 'Anomaly Signals', val: anomalyCount.toString(), status: anomalyCount > 0 ? 'Needs attention' : 'Clear', cls: anomalyCount > 0 ? 'alert' : 'ok' }
+        ];
+
+        target.innerHTML = cards.map(card => `
+            <div class="detection-item ${card.cls}">
+                <span class="detection-val">${card.val}</span>
+                <span class="detection-label">${card.label}</span>
+                <span class="detection-status">${card.status}</span>
+            </div>
+        `).join('');
+    }
+
+    populateCCTVIncidents() {
+        const target = document.getElementById('cctv-incident-log');
+        if (!target) return;
+
+        const rows = SSyncData.incidents.slice(0, 4).map((incident, idx) => {
+            const typeColor = incident.severity === 'critical'
+                ? 'var(--danger)'
+                : incident.severity === 'warning'
+                    ? 'var(--warning)'
+                    : 'var(--info)';
+            return `<div class="incident-row">
+                <span class="incident-time">${incident.time}</span>
+                <span class="incident-id">${incident.id}</span>
+                <span class="incident-type" style="color:${typeColor}">${incident.type}</span>
+                <span class="incident-loc"><span class="material-icons-round" style="font-size:.95rem">place</span>${incident.location}</span>
+                <span style="font-size:.78rem;color:${typeColor};font-weight:700;text-transform:uppercase">${incident.severity}</span>
+                <span class="incident-detail">${incident.detail}</span>
+            </div>`;
+        });
+
+        target.innerHTML = rows.join('');
     }
 
     // ── Analytics ──────────────────────────────────────

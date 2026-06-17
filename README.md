@@ -30,6 +30,29 @@ This solution meaningfully integrates several Google services to demonstrate rea
 - **PII Sanitization:** The repository is fully sanitized for public release. No real names or personal identifying information are stored.
 - **Safe Key Handling:** AI API keys are handled in-memory only via a password-type input field, ensuring keys are never logged or pushed to version control.
 
+## 🐍 7. Python Detection Backend (CCTV / Phone / Satellite)
+A Python backend is included in `python-backend/` to power computer vision detection pipelines:
+- **People Detection:** OpenCV HOG detector
+- **Object & Motion Detection:** OpenCV contour and background subtraction
+- **Input Types:** CCTV frames, phone camera snapshots, satellite imagery
+
+Quick start:
+```bash
+cd python-backend
+python -m venv .venv
+.venv\\Scripts\\activate
+pip install -r requirements.txt
+uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Key endpoints:
+- `POST /detect/cctv`
+- `POST /detect/phone`
+- `POST /detect/satellite`
+- `POST /detect/image`
+
+See `python-backend/README.md` for full API usage.
+
 ## 📝 6. Assumptions Made
 - We assume the user has a modern browser with Canvas and JavaScript enabled.
 - We assume the user will provide their own Anthropic API key in the settings to enable the full capabilities of the "StadiumSync AI" assistant.
